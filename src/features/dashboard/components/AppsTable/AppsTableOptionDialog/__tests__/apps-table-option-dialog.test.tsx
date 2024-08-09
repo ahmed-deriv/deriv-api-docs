@@ -12,12 +12,12 @@ const Props: IAppsTableOptionDialog = {
 };
 
 describe('Apps Table', () => {
-  const renderAppTable = (props: IAppsTableOptionDialog = Props) => {
+  const renderAppTableOptionDialog = (props: IAppsTableOptionDialog = Props) => {
     render(<AppsTableOptionDialog {...props} />);
   };
 
   it('Should render sort option dialog properly', () => {
-    renderAppTable();
+    renderAppTableOptionDialog();
     const modalHeader = screen.getByText('Sort by');
     expect(modalHeader).toBeInTheDocument();
   });
@@ -27,17 +27,21 @@ describe('Apps Table', () => {
       ...Props,
       optionType: 'filter',
     };
-    renderAppTable(updatedProps);
+    renderAppTableOptionDialog(updatedProps);
     const modalHeader = screen.getByText('Filter by OAuth scopes');
     expect(modalHeader).toBeInTheDocument();
   });
 
   it('Should handle sort when click on apply button', async () => {
-    renderAppTable();
-    const radioButton = screen.getByTestId('appNameDescending');
-    const dialogButton = screen.getByText('Apply');
+    renderAppTableOptionDialog();
+    const radioButton = screen.getByTestId('appNameAscending');
+    expect(radioButton).not.toBeChecked();
     await act(async () => {
       await userEvent.click(radioButton);
+    });
+    expect(radioButton).toBeChecked();
+    const dialogButton = screen.getByText('Apply');
+    await act(async () => {
       await userEvent.click(dialogButton);
     });
     expect(Props.updateSelectedOptions).toHaveBeenCalled();
@@ -48,7 +52,7 @@ describe('Apps Table', () => {
       ...Props,
       optionType: 'filter',
     };
-    renderAppTable(updatedProps);
+    renderAppTableOptionDialog(updatedProps);
     const checkbox = screen.getByTestId('admin');
     const dialogButton = screen.getByText('Apply');
     await act(async () => {
@@ -64,7 +68,7 @@ describe('Apps Table', () => {
       optionType: 'filter',
       selectedOptions: { sortBy: 'appIdAscending', filterBy: ['all'] },
     };
-    renderAppTable(updatedProps);
+    renderAppTableOptionDialog(updatedProps);
     const checkbox = screen.getByTestId('admin');
     const dialogButton = screen.getByText('Apply');
     await act(async () => {
@@ -80,7 +84,7 @@ describe('Apps Table', () => {
       optionType: 'filter',
       selectedOptions: { sortBy: 'appIdAscending', filterBy: ['admin'] },
     };
-    renderAppTable(updatedProps);
+    renderAppTableOptionDialog(updatedProps);
     const checkbox = screen.getByTestId('all');
     const dialogButton = screen.getByText('Apply');
     await act(async () => {
@@ -99,7 +103,7 @@ describe('Apps Table', () => {
         filterBy: Object.keys(tableFilterOptions).slice(2),
       },
     };
-    renderAppTable(updatedProps);
+    renderAppTableOptionDialog(updatedProps);
     const checkbox = screen.getByTestId('no_scope');
     const checkboxes = screen.getAllByRole('checkbox');
     expect(checkboxes.length).toBe(7);
